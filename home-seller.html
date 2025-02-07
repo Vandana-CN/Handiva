@@ -1,0 +1,266 @@
+<html>
+
+<style>
+
+body {font-family: Arial, Helvetica, sans-serif; font-size: 18px;}
+* {box-sizing: border-box;}
+
+
+input[type=text],select{
+width:30%;
+padding:7px 9px;
+text-align: center;
+margin: 8px 0;
+display: block;
+background-color: #F5F5F5;
+opacity:03;
+border: 1px solid #000000;
+box-sizing:border-box;
+
+}
+
+input[type=button] {
+  width: 10%;
+  height:6%;
+  background-color: #585858;
+  color: white;
+  padding: 8px 14px;
+  text-align: center;
+  display:block
+  margin: 4px 8px;
+  font-size: 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+
+input[type=file] {
+width:30%;
+padding:7px 9px;
+text-align: center;
+font-size: 15px;
+margin: 8px 0;
+display: block;
+background-color: #F5F5F5;
+border: 2px solid #000000;
+box-sizing:border-box;
+
+}
+
+select[id=type]{
+font-size: 15px;
+}
+
+
+.block a {
+	
+    background-color: #eee;
+    color: black;
+    display: block;
+    padding: 20px;
+	font-size: 16px;
+	height: 90px;
+    text-decoration: none;
+	font-family: "Times New Roman", Times, serif;
+	font-weight: bold;
+	cursor: pointer;
+	color:#606060;
+}
+
+div.block {
+  display: inline; /* the default for span */
+  margin: 5px;
+  float: left;
+  width: 300px;
+   
+}
+div.block img {
+  width: 100%;
+  height: auto;
+}
+div.block:hover {
+  border: 1px solid #777;
+}
+
+div.desc {
+  padding: 30px;
+  text-align: center;
+}
+
+div.row {
+  width: 100%;
+  text-align: center; // center the content of the container
+}
+
+
+div.block {
+  margin: 5px;
+  border: 1px solid #ccc;
+  float: left;
+  width: 300px;
+}
+
+div.block:hover {
+  border: 1px solid #777;
+}
+
+div.block img {
+  width: 100%;
+  height: auto;
+}
+
+div.desc {
+  padding: 30px;
+  text-align: center;
+}
+
+#logout{
+position: absolute ;
+left: 90%;
+top:80px;
+width: 145px;
+height: 40px;
+
+ background-color: #3399FF;
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+
+}
+
+</style>
+
+ <form action="/logout" method="GET" name="logoutform">
+</form>
+
+<form method="post" enctype="multipart/form-data" action="/upload" name="uploadform">
+    Product Name: <input type="text" name="productname" style="border:2px solid";>
+	<br>
+	
+	Price: <input type="text" name="productprice" style="border:2px solid";>
+	<br>
+	Description: <input type="text" name="productdescription" style="border:2px solid";>
+	<br>
+	Type:<select id="type" name="producttype" style="border:2px solid";>
+    <option value="wood" style="font-size: 18px";>Wood</option>
+    <option value="metal" style="font-size: 18px";>Metal</option>
+    <option value="jute" style="font-size: 18px";>Jute</option>
+    <option value="terracotta" style="font-size: 18px";>Terracotta</option>
+  </select>
+
+<input type="hidden" id="sellername" name="cookiesellername" value="">
+	<br>
+	Product image:<input type="file" name="file">
+		
+	<br>
+    <input type="button" value="Upload" onclick="uploadproduct()">
+		
+</form> 
+
+<input id="logout" type="button" value="Logout" onclick="logout()">
+<div id ="container">
+</div> 
+
+<script>
+
+var cookie={sellername:"",};
+var products;
+
+function uploadproduct(){
+
+document.getElementById("sellername").value = cookie.sellername;
+
+//alert(cookie.sellername);
+
+document.uploadform.submit();
+
+}
+
+function loadsellerproducts(){
+
+
+var temp = JSON.parse(getCookie("emarket"));
+  
+  cookie.sellername = temp.username;
+  
+  alert(cookie.sellername);
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	
+	var products = JSON.parse(xmlhttp.responseText);
+	
+
+
+for(var i=0; i<products.length; i++)
+{  
+	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv); 
+ 
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+	
+	var x = document.createElement('a');                        // Create a <p> node
+	x.innerHTML =    "Name:"+products[i].Name+"<br>Price: Rs."+products[i].Price+"<br>Description:"+products[i].Description;    // Create a text node
+	                                        
+	document.getElementById(products[i].Imageid).appendChild(x);   // Append <p> to <body>
+  
+ } 
+		
+	}
+	
+	};
+  
+  xmlhttp.open("POST", "/loadsellerproducts", true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send(JSON.stringify(cookie));
+     
+  }
+  
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+function logout()
+{
+setCookie("emarket", cookie, -1);
+document.logoutform.submit();
+}
+</script>
+<body onload="loadsellerproducts()"> 
+</body>  
+</html>  

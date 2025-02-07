@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+<!--Get your own code at fontawesome.com-->
+  
+
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 4px 8px;
+  overflow: hidden;
+  background-color: #FF69B4;
+}
+
+li {
+  float: left;
+  border-right:1px solid #bbb;
+}
+
+li:last-child {
+  border-right: none;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  font-size: large;
+  padding: 17px 60px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #ccc;
+}
+
+li.active {
+color: white;
+  background-color: #4CAF50;
+}
+
+
+
+
+.block {
+  position: relative;
+  display: in-line;
+  width: 300px;
+  height: 400px;
+
+}
+
+.block img {
+  width: 100px;
+  height: 100px;
+
+}
+
+.block a {
+	
+    background-color: #eee;
+    color: black;
+    display: block;
+    padding: 20px;
+	font-size: 16px;
+	height: 50px;
+    text-decoration: none;
+	font-family: "Times New Roman", Times, serif;
+	font-weight: bold;
+	cursor: pointer;
+	color:#606060;
+}
+
+
+#total{
+position: absolute ;
+left: 90%;
+top:80px;
+width: 145px;
+height: 40px;
+
+ background-color: #3399FF;
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+
+}
+
+.block .addtocart {
+  position: absolute ;
+  top: 285px;
+  left: 12;
+   
+  background-color: #555;
+  color: white;
+  font-size: 14px;
+  padding: 8px 16px;
+  
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.block .removefromcart {
+  position: absolute ;
+  top: 285px;
+  left: 12;
+   
+  background-color: #555;
+  color: white;
+  font-size: 14px;
+  padding: 8px 16px;
+  
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+}
+
+
+div.block {
+  margin: 5px;
+  border: 1px solid #ccc;
+  float: left;
+  width: 300px;
+}
+
+div.block:hover {
+  border: 1px solid #777;
+}
+
+div.block img {
+  width: 100%;
+  height: auto;
+}
+
+div.desc {
+  padding: 30px;
+  text-align: center;
+}
+
+
+</style>
+</head>
+<body onload="loadallproducts()">
+
+<form action="/payment" method="POST" name="paymentform">
+</form>
+
+<form action="/logout" method="GET" name="logoutform">
+</form>
+
+
+<ul>
+  <li><a  onclick="loadallproducts()"><i class="fa fa-home" style='font-size:24px'></i> Home</a></li>
+  <li><a  onclick="loadwoodproducts()">Wood</a></li>
+  <li><a  onclick="loadmetalproducts()">Metal</a></li>
+  <li><a  onclick="loadjuteproducts()">Jute</a></li>
+  <li><a  onclick="loadterracottaproducts()">Terracotta</a></li>
+  
+  <li style="float:right"><a  onclick="logout()"><i class='fas fa-sign-out-alt' style='font-size:24px'></i> Logout</a></li>
+  <li style="float:right"><a  onclick="loadcart()"><i class='fas fa-cart-arrow-down' style='font-size:24px'></i> Cart</a></li>
+</ul>
+
+
+
+
+
+<div id ="container">
+
+
+</div> 
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+
+
+var cookie;
+var products;
+
+function loadallproducts(){
+
+$(".block").remove();
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	
+	products = JSON.parse(xmlhttp.responseText);
+	
+for(var i=0; i<products.length; i++)
+{  
+	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv);  
+    
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+
+	var x = document.createElement('a'); 
+	x.innerHTML = 	"Name: "+products[i].Name+"<br>Price: Rs. "+products[i].Price+"<br>Description: "+products[i].Description;
+//	x.style.width="300px";
+	document.getElementById(products[i].Imageid).appendChild(x);   // Append <p> to <body>
+  
+var btn = document.createElement("button");
+btn.id='add';	
+btn.setAttribute("name", products[i].Imageid);
+btn.setAttribute("onClick", "addtocart(this.name)");
+btn.className = 'addtocart';
+btn.innerHTML = "Add to Cart";
+document.getElementById(products[i].Imageid).appendChild(btn);
+
+} 
+		
+	}
+	
+	};
+  
+  xmlhttp.open("POST", "/loadallproducts", true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send();
+ 
+cookie = getCookie("emarket");
+cookie = JSON.parse(cookie);
+ }
+
+//add to cart all
+function addtocart(name){
+//alert(name);
+//alert(cookie.username);
+var addtocart = {Imageid: "", username: "",};
+addtocart.Imageid = name;
+addtocart.username = cookie.username;
+addtocart = JSON.stringify(addtocart);
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     	
+		alert(xhttp.responseText);  
+       
+    }
+};
+xhttp.open("POST", "/addtocart", true);
+xhttp.setRequestHeader("Content-type", "application/json");
+xhttp.send(addtocart);
+
+}
+
+//remove from cart
+function removefromcart(name){
+//alert(name);
+//alert(cookie.username);
+var remove = {Imageid: "", username: "",};
+var xy = name;
+remove.Imageid = name;
+remove.username = cookie.username;
+remove = JSON.stringify(remove);
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       	  alert(xhttp.responseText);
+      //$("#"+xy).hide();
+	  //location.reload();
+	  loadcart();
+    }
+};
+xhttp.open("POST", "/removefromcart", true);
+xhttp.setRequestHeader("Content-type", "application/json");
+xhttp.send(remove);
+
+}
+//load cart
+function loadcart(){
+
+var xx = {username: "",};
+xx.username = cookie.username;
+xx = JSON.stringify(xx);
+
+var incart;
+var xhttp = new XMLHttpRequest();
+
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	 incart = JSON.parse(xhttp.responseText);
+	 	 $(".block").remove();
+
+	var total =0;
+
+	for(var j=0; j<incart.length; j++)
+	{
+
+		for(var i=0; i<products.length; i++)
+		{  
+
+if(incart[j].Imageid==products[i].Imageid)
+{	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv);  
+    
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+
+var x = document.createElement('a');                        
+x.innerHTML =     "Name: "+products[i].Name+"<br>Price: Rs. "+products[i].Price+"<br>Description: "+products[i].Description;    
+
+                                        
+document.getElementById(products[i].Imageid).appendChild(x);   
+
+var btn = document.createElement("button");
+btn.id='remove';	
+btn.setAttribute("name", products[i].Imageid);
+btn.setAttribute("onClick", "removefromcart(this.name)");
+btn.className = 'removefromcart';
+btn.innerHTML = "Remove";
+document.getElementById(products[i].Imageid).appendChild(btn);
+
+total = total + products[i].Price;
+
+} 
+} 
+}
+
+//alert(total);
+
+var iDiv = document.createElement('button');
+iDiv.id = "total";
+iDiv.className = 'block';
+iDiv.innerHTML = "PAY Rs. " +total;
+iDiv.setAttribute("onClick", "document.paymentform.submit()");
+document.getElementById("container").appendChild(iDiv);	 
+	 
+cookie.total = total;
+setCookie("emarket", JSON.stringify(cookie), 2);	 
+	            
+    }
+};
+xhttp.open("POST", "/loadcart", true);
+xhttp.setRequestHeader("Content-type", "application/json");
+xhttp.send(xx);
+
+cookie = getCookie("emarket");
+cookie = JSON.parse(cookie);
+}
+// function for payment
+//wood
+function loadwoodproducts(){
+
+$(".block").remove();
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	
+	 products = JSON.parse(xmlhttp.responseText);
+	
+	
+for(var i=0; i<products.length; i++)
+{  
+
+	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv);  
+  
+   
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+	
+	var x = document.createElement('a');                        // Create a <p> node
+	x.innerHTML =    "Name: "+products[i].Name+"<br>Price: Rs. "+products[i].Price+"<br>Description: "+products[i].Description;    // Create a text node
+	//x.style.width="300px";
+
+	document.getElementById(products[i].Imageid).appendChild(x);   // Append <p> to <body>
+  
+ 
+ var btn = document.createElement("button");
+btn.id='add';	
+btn.setAttribute("name", products[i].Imageid);
+btn.setAttribute("onClick", "addtocart(this.name)");
+btn.className = 'addtocart';
+btn.innerHTML = "Add to Cart";
+document.getElementById(products[i].Imageid).appendChild(btn);
+ } 
+	}
+	
+	};
+  
+  xmlhttp.open("POST", "/loadwoodproducts", true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send();
+}
+
+//Metal
+
+function loadmetalproducts(){
+
+$(".block").remove();
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	console.log("received products");
+	var products = JSON.parse(xmlhttp.responseText);
+
+for(var i=0; i<products.length; i++)
+{  
+	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv);  
+  
+    
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+	
+	var x = document.createElement('a');                        // Create a <p> node
+	x.innerHTML =   "Name: "+products[i].Name+"<br>Price: Rs. "+products[i].Price+"<br>Description: "+products[i].Description;    // Create a text node
+	//x.style.width="300px";
+	
+	document.getElementById(products[i].Imageid).appendChild(x);   // Append <p> to <body>
+  
+  
+ var btn = document.createElement("button");
+btn.id='add';	
+btn.setAttribute("name", products[i].Imageid);
+btn.setAttribute("onClick", "addtocart(this.name)");
+btn.className = 'addtocart';
+btn.innerHTML = "Add to Cart";
+document.getElementById(products[i].Imageid).appendChild(btn);
+ 
+ } 
+		
+	}
+	
+	};
+  
+  xmlhttp.open("POST", "/loadmetalproducts", true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send(); 
+}
+
+//Jute
+
+function loadjuteproducts(){
+
+$(".block").remove();
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	console.log("received products");
+	var products = JSON.parse(xmlhttp.responseText);
+
+for(var i=0; i<products.length; i++)
+{  
+
+	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv);  
+    
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+	
+	var x = document.createElement('a'); 
+	x.innerHTML = 	"Name: "+products[i].Name+"<br>Price: <b>Rs.</b> "+products[i].Price+"<br>Description: "+products[i].Description;
+	//x.style.width="300px";                                      
+	document.getElementById(products[i].Imageid).appendChild(x);   
+  
+ var btn = document.createElement("button");
+btn.id='add';	
+btn.setAttribute("name", products[i].Imageid);
+btn.setAttribute("onClick", "addtocart(this.name)");
+btn.className = 'addtocart';
+btn.innerHTML = "Add to Cart";
+document.getElementById(products[i].Imageid).appendChild(btn);
+
+ } 
+		
+	}
+	
+	};
+  
+  xmlhttp.open("POST", "/loadjuteproducts", true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send();
+
+  }
+
+//Terracotta
+
+function loadterracottaproducts(){
+
+$(".block").remove();
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	console.log("received products");
+	var products = JSON.parse(xmlhttp.responseText);
+	
+for(var i=0; i<products.length; i++)
+{  
+	
+var iDiv = document.createElement('div');
+iDiv.id = products[i].Imageid;
+iDiv.className = 'block';
+document.getElementById("container").appendChild(iDiv);  
+  
+
+  var x = document.createElement("IMG");
+  x.setAttribute("src", products[i].Imageid);
+  x.style.width="300px";
+  x.style.height="300px";
+  x.setAttribute("alt", "The Pulpit Rock");
+  document.getElementById(products[i].Imageid).appendChild(x);
+	
+	var x = document.createElement('a');                        // Create a <p> node
+	x.innerHTML =    "Name: "+products[i].Name+"<br>Price: Rs. "+products[i].Price+"<br>Description: "+products[i].Description;    // Create a text node
+	//x.style.width="300px";
+	                                         
+	document.getElementById(products[i].Imageid).appendChild(x);   // Append <p> to <body>
+
+ 
+ var btn = document.createElement("button");
+btn.id='add';	
+btn.setAttribute("name", products[i].Imageid);
+btn.setAttribute("onClick", "addtocart(this.name)");
+btn.className = 'addtocart';
+btn.innerHTML = "Add to Cart";
+document.getElementById(products[i].Imageid).appendChild(btn);
+
+ } 
+		
+	}
+	
+	};
+  
+  xmlhttp.open("POST", "/loadterracottaproducts", true);
+  xmlhttp.setRequestHeader("Content-type", "application/json");
+  xmlhttp.send();
+  
+  }
+
+//Add to cart
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function logout()
+{
+setCookie("emarket", cookie, -1);
+document.logoutform.submit();
+}
+
+</script>
+</body>  
+</html>  
+</html>

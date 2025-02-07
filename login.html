@@ -1,0 +1,155 @@
+<html>  
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+
+html { 
+  background: url(pic3.jpg) no-repeat center fixed; 
+  background-size: cover;
+}
+
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+.input-container {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.icon {
+  padding: 10px;
+  background: #FF69B4;
+  color: white;
+  min-width: 50px;
+  text-align: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+}
+
+.input-field:focus {
+  border: 2px solid #FF69B4;
+}
+
+/* Set a style for the submit button */
+.btn {
+  background-color: #FF69B4;
+  color: white;
+  padding: 15px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.btn:hover {
+  opacity: 1;
+}
+
+</style>
+</head>
+<body>
+
+<form name="userform" id="user" action="/authenticate-controller" method="POST" style="max-width:500px;margin:auto"> 
+<h2 style="color:white;">Users</h2> 
+<div class="input-container">
+    <i class="fa fa-user icon"></i>
+    <input class="input-field" id="username" type="text" placeholder="Username" name="username">
+  </div>
+
+  <div class="input-container">
+    <i class="fa fa-key icon"></i>
+    <input class="input-field" id="userpassword" type="password" placeholder="Password" name="userpassword">
+  </div>
+ 
+<button type="button" class="btn" onclick="formsubmit()">Login</button>  
+</form>
+<br>
+
+<form action="/authenticate-controller" name="userform2" method="POST" style="max-width:500px;margin:auto">
+<h2 style="color:white;">Sellers</h2>
+
+<div class="input-container">
+    <i class="fa fa-user icon"></i>
+    <input class="input-field" type="text" id="sellername" placeholder="Username" name="sellername">
+  </div>
+
+  <div class="input-container">
+    <i class="fa fa-key icon"></i>
+    <input class="input-field" type="password" id="sellerpassword" placeholder="Password" name="sellerpassword">
+  </div>
+<br>
+
+<button type="button" class="btn" onclick="formsubmit2()">Login</button>
+</form>
+
+<script>
+function formsubmit(){
+
+var cookie={username:"", password:"", total:""};
+
+cookie.username = document.getElementById("username").value;
+cookie.password = document.getElementById("userpassword").value;
+var exdays = 2;
+
+cookie = JSON.stringify(cookie);
+
+setCookie("emarket", cookie, exdays);
+
+document.userform.submit();
+
+}
+
+
+function formsubmit2(){
+
+var cookie={username:"", password:"", total:""};
+
+cookie.username = document.getElementById("sellername").value;
+cookie.password = document.getElementById("sellerpassword").value;
+var exdays = 2;
+
+cookie = JSON.stringify(cookie);
+
+setCookie("emarket", cookie, exdays);
+
+document.userform2.submit();
+
+}
+
+
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+	alert("inside");
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+</script>
+</body>  
+</html>  
